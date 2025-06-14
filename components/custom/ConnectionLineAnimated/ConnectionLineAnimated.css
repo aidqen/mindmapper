@@ -1,0 +1,39 @@
+.animated-connection-line {
+  animation: dash 2s linear infinite;
+  filter: drop-shadow(0 0 4px currentColor);
+  transition: stroke 0.3s ease;
+}
+
+.animated-connection-line-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+  filter: blur(2px);
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes glow {
+  0% {
+    stroke-opacity: 0.1;
+  }
+  100% {
+    stroke-opacity: 0.4;
+  }
+}
+
+/* Hover effects for better interactivity */
+.animated-connection-line:hover {
+  stroke-width: 1;
+  animation-duration: 1s;
+}
+
+.animated-connection-line-glow:hover {
+  stroke-width: 1;
+  animation-duration: 1s;
+}
