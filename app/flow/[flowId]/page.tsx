@@ -161,7 +161,7 @@ export default function Home() {
   ]
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, type: 'customEdge' }, eds)),
+    (params: Connection) => setEdges((eds) => addEdge({ ...params, type: 'basic' }, eds)),
     [setEdges],
   );
 
