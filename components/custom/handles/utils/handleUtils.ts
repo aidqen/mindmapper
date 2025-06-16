@@ -17,7 +17,7 @@ export const getPositionStyles = (position: Position) => {
           top: -lineLength,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '2px',
+          width: '1px',
           height: `${lineLength}px`,
         },
         plusButton: {
@@ -37,7 +37,7 @@ export const getPositionStyles = (position: Position) => {
           bottom: -lineLength,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '2px',
+          width: '1px',
           height: `${lineLength}px`,
         },
         plusButton: {
@@ -58,7 +58,7 @@ export const getPositionStyles = (position: Position) => {
           top: '50%',
           transform: 'translateY(-50%)',
           width: `${lineLength}px`,
-          height: '2px',
+          height: '1px',
         },
         plusButton: {
           left: -(lineLength + plusButtonSize / 2),
@@ -78,7 +78,7 @@ export const getPositionStyles = (position: Position) => {
           top: '50%',
           transform: 'translateY(-50%)',
           width: `${lineLength}px`,
-          height: '2px',
+          height: '1px',
         },
         plusButton: {
           right: -(lineLength + plusButtonSize / 2),

@@ -1,6 +1,8 @@
-import { Handle, Position, HandleProps } from '@xyflow/react';
-import { Plus } from 'lucide-react';
-import { getPositionStyles } from './handleUtils';
+import { Position, HandleProps, Node, Edge } from '@xyflow/react';
+import { getPositionStyles } from './utils/handleUtils';
+import { HandleDot } from './components/HandleDot';
+import { ConnectionLine } from './components/ConnectionLine';
+import { PlusButton } from './components/PlusButton';
 
 interface CustomHandleProps extends Omit<HandleProps, 'children'> {
     type: 'source' | 'target';
@@ -8,6 +10,11 @@ interface CustomHandleProps extends Omit<HandleProps, 'children'> {
     id?: string;
     isConnectable?: boolean;
     style?: React.CSSProperties;
+    isConnected: boolean;
+    nodeId?: string;
+    onAddNode?: (newNode: Node, newEdge: Edge) => void;
+    positionX: number;
+    positionY: number;
 }
 
 export function CustomHandle({
@@ -16,77 +23,45 @@ export function CustomHandle({
     id,
     isConnectable = true,
     style,
+    isConnected,
+    nodeId,
+    onAddNode,
+    positionX,
+    positionY,
     ...props
 }: CustomHandleProps) {
+    
     const positionStyles = getPositionStyles(position);
+    const shouldShowPlusButton = type === 'target' && !isConnected;
 
     return (
         <>
-            {/* Connection Line */}
-
-            {/* Handle (Small Dot) - This is the actual React Flow connection point */}
-            <Handle
+            <HandleDot
                 type={type}
                 position={position}
                 id={id}
                 isConnectable={isConnectable}
-                style={{
-                    position: 'absolute',
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    border: '1px solid #6b7280',
-                    background: '#ffffff',
-                    cursor: 'crosshair',
-                    zIndex: 2,
-                    ...positionStyles.handle,
-                    ...style
-                }}
+                style={style}
+                positionStyles={positionStyles}
                 {...props}
             />
 
-            {/* Plus Button - Separate interactive element */}
-            {type === 'target' && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        background: '#6b7280',
-                        width: '1px',
-                        zIndex: 1,
-                        transition: 'background-color 0.2s ease',
-                        ...positionStyles.line,
-                    }}
-                />
+            {/* Connection Line and Plus Button for unconnected target handles */}
+            {shouldShowPlusButton && (
+                <>
+                    <ConnectionLine positionStyles={positionStyles} />
+                    {onAddNode && nodeId && (
+                        <PlusButton
+                            nodeId={nodeId}
+                            handleId={id}
+                            positionStyles={positionStyles}
+                            onAddNode={onAddNode}
+                            positionX={positionX}
+                            positionY={positionY}
+                        />
+                    )}
+                </>
             )}
-            {type === 'target' && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        width: '16px',
-                        height: '16px',
-                        borderRadius: '4px',
-                        border: '1px solid #374151',
-                        background: '#1f2937',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        zIndex: 3,
-                        transition: 'all 0.2s ease',
-                        ...positionStyles.plusButton,
-                    }}
-                    onClick={() => {
-                        // Handle plus button click - could add new nodes, etc.
-                        console.log('Plus button clicked');
-                    }}
-                >
-                    <Plus
-                        size={12}
-                        color="#9ca3af"
-                        strokeWidth={2}
-                    />
-                </div>
-            )}
-    </>
-  );
+        </>
+    );
 }
