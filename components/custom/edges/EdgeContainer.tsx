@@ -1,4 +1,4 @@
-import { useState, useRef, ReactNode } from 'react';
+import { useState, useRef, ReactNode, useCallback } from 'react';
 import {
   EdgeLabelRenderer,
   getBezierPath,
@@ -6,6 +6,7 @@ import {
   type EdgeProps,
 } from '@xyflow/react';
 import { Trash } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface EdgeContainerProps extends EdgeProps {
   children: ReactNode;
@@ -71,21 +72,25 @@ export default function EdgeContainer({
       </g>
       {isHovered && (
         <EdgeLabelRenderer>
-          <div
+          <motion.div
             className="absolute pointer-events-auto z-[1000] nodrag nopan bg-gray-900"
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
             }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <button 
-              className="flex items-center cursor-pointer justify-center rounded-xs w-5 h-5 text-white border border-white"
+              className="flex items-center cursor-pointer justify-center rounded-xs w-5 h-5 text-white border border-white hover:bg-gray-700 transition-colors"
               onClick={onEdgeClick}
             >
               <Trash size={12} />
             </button>
-          </div>
+          </motion.div>
         </EdgeLabelRenderer>
       )}
     </>
