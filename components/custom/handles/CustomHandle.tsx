@@ -10,7 +10,7 @@ interface CustomHandleProps extends Omit<HandleProps, 'children'> {
     id?: string;
     isConnectable?: boolean;
     style?: React.CSSProperties;
-    isConnected: boolean;
+    isConnected: boolean | undefined;
     nodeId?: string;
     onAddNode?: (newNode: Node, newEdge: Edge) => void;
     positionX: number;

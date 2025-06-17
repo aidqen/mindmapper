@@ -28,7 +28,7 @@ export const useFlowLogic = () => {
   }, [setNodes, setEdges]);
 
   const CustomNodeWithCallback = useCallback((props: any) => {
-    return React.createElement(CustomNode, { ...props, onAddNode });
+    return React.createElement(CustomNode, { ...props, onAddNode, setNodes, nodes });
   }, [onAddNode]);
 
   const nodeTypes = useMemo(() => ({ 

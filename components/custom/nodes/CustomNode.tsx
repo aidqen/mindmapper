@@ -1,4 +1,4 @@
-import { Position, NodeProps, useStore, Node, Edge, NodeResizer } from '@xyflow/react';
+import { Position, NodeProps, useStore, Node, Edge, NodeResizer, useReactFlow, useNodesState, useUpdateNodeInternals } from '@xyflow/react';
 import { CustomHandle } from '../handles/CustomHandle';
 import { Ellipsis, Pen, Trash } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
@@ -17,11 +17,23 @@ interface CustomNodeData extends Record<string, unknown> {
 interface CustomNodeProps extends NodeProps {
   data: CustomNodeData;
   onAddNode?: (newNode: Node, newEdge: Edge) => void;
+  setNodes?: React.Dispatch<React.SetStateAction<Node[]>>;
+  nodes?: Node[];
+}
+
+interface HandleType {
+  id: string;
+  position: keyof typeof Position;
+  type: 'source' | 'target';
+  isConnected?: boolean;
 }
 
 
 
-function CustomNode({ id, data, onAddNode, positionAbsoluteX, positionAbsoluteY }: CustomNodeProps) {
+function CustomNode({ id, data, onAddNode, positionAbsoluteX, positionAbsoluteY, setNodes, nodes }: CustomNodeProps) {
+console.log("🔍 ~ CustomNode ~ components/custom/nodes/CustomNode.tsx:33 ~ data:", data)
+console.log("🔍 ~ CustomNode ~ components/custom/nodes/CustomNode.tsx:33 ~ nodes:", nodes)
+// console.log("🔍 ~ CustomNode ~ components/custom/nodes/CustomNode.tsx:24 ~ data:", data)
   const [isHover, setIsHover] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -29,16 +41,7 @@ function CustomNode({ id, data, onAddNode, positionAbsoluteX, positionAbsoluteY 
   const edges = useStore((s) => s.edges);
   const inputRef = useRef<HTMLInputElement>(null);
   const [lastClickTime, setLastClickTime] = useState(0);
-  
-  const handleNodeDoubleClick = () => {
-    setIsDialogOpen(true);
-  };
-  
-  const handleDialogSave = (newLabel: string, handleCount: any[]) => {
-    setLabelValue(newLabel);
-    // TODO: Update node data with new label and handle count
-    console.log(`Saving node with ${handleCount} handles`);
-  };
+  const updateNodeInternals = useUpdateNodeInternals()
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -46,51 +49,80 @@ function CustomNode({ id, data, onAddNode, positionAbsoluteX, positionAbsoluteY 
     }
   }, [isEditing]);
 
-  const handles = data.handles?.map((handle) => {
-    const isConnected = edges.some(
-      (edge) =>
-        (edge.source === id && edge.sourceHandle === handle.id) ||
-        (edge.target === id && edge.targetHandle === handle.id)
-    );
+  const handleNodeDoubleClick = () => {
+    setIsDialogOpen(true);
+  };
 
-    return { ...handle, isConnected };
-  }) || [];
+  const handleDialogSave = (newLabel: string, handles: any[]) => {
+    setLabelValue(newLabel);
 
-  const handleLabelClick = () => {
-    setIsEditing(true)
-  }
+    if (setNodes) {
+      setNodes((nodes) => nodes.map(node => {
+          if (node.id === id) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                label: newLabel,
+                handles
+              }
+            };
+          }
+          return node;
+        })
+      );
+    }
+    // updateNodeInternals(id)
+};
 
-  const handleLabelBlur = () => {
+
+
+const handles = (data?.handles as HandleType[] | undefined)?.map((handle: HandleType) => {
+  const isConnected = edges.some(
+    (edge) =>
+      (edge.source === id && edge.sourceHandle === handle.id) ||
+    (edge.target === id && edge.targetHandle === handle.id)
+  );
+  
+  return { ...handle, isConnected };
+}) || [];
+console.log("🔍 ~ CustomNode ~ components/custom/nodes/CustomNode.tsx:73 ~ handles:", handles)
+
+const handleLabelClick = () => {
+  setIsEditing(true)
+}
+
+const handleLabelBlur = () => {
+  setIsEditing(false)
+}
+
+const handleLabelKeyDown = (e: React.KeyboardEvent) => {
+  if (e.key === 'Enter') {
     setIsEditing(false)
   }
-
-  const handleLabelKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      setIsEditing(false)
-    }
-    if (e.key === 'Escape') {
-      setIsEditing(false)
-      setLabelValue(data.label || '')
-    }
+  if (e.key === 'Escape') {
+    setIsEditing(false)
+    setLabelValue(data.label || '')
   }
+}
 
-  return (
-    <>
-      <div
-        className='relative p-2.5 border border-#777 rounded-[8px] max-w-48 cursor-pointer'
-        onMouseEnter={() => setIsHover(true)}
-        onMouseLeave={() => setIsHover(false)}
-        onDoubleClick={handleNodeDoubleClick}
-        onMouseDown={(e) => {
-          // Handle double click
-          const currentTime = new Date().getTime();
-          const clickLength = currentTime - lastClickTime;
-          if (clickLength < 300) {
-            handleNodeDoubleClick();
-          }
-          setLastClickTime(currentTime);
-        }}
-      >
+return (
+  <>
+    <div
+      className='relative p-2.5 border border-#777 rounded-[8px] max-w-48 cursor-pointer'
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+      onDoubleClick={handleNodeDoubleClick}
+      onMouseDown={(e) => {
+        // Handle double click
+        const currentTime = new Date().getTime();
+        const clickLength = currentTime - lastClickTime;
+        if (clickLength < 300) {
+          handleNodeDoubleClick();
+        }
+        setLastClickTime(currentTime);
+      }}
+    >
       <AnimatePresence>
         {isHover && (
           <motion.div
@@ -123,7 +155,7 @@ function CustomNode({ id, data, onAddNode, positionAbsoluteX, positionAbsoluteY 
           )}
         </div>
       )}
-      {data?.handles ? handles?.map((handle, idx) => (
+      {data?.handles ? handles?.map((handle: HandleType, idx: number) => (
         <CustomHandle
           key={idx}
           type={handle.type}
@@ -138,15 +170,15 @@ function CustomNode({ id, data, onAddNode, positionAbsoluteX, positionAbsoluteY 
         />
       )) : null}
     </div>
-    <NodeEditorDialog 
-      isOpen={isDialogOpen} 
+    <NodeEditorDialog
+      isOpen={isDialogOpen}
       onOpenChange={setIsDialogOpen}
       nodeLabel={labelValue}
       handles={handles}
       onSave={handleDialogSave}
     />
   </>
-  );
+);
 }
 
 export default CustomNode;
