@@ -60,22 +60,15 @@ console.log("🔍 ~ CustomNode ~ components/custom/nodes/CustomNode.tsx:33 ~ nod
       setNodes((nodes) => nodes.map(node => {
           if (node.id === id) {
             return {
-              ...node,
-              data: {
-                ...node.data,
-                label: newLabel,
-                handles
-              }
+              ...node, data: { ...node.data, label: newLabel, handles }
             };
           }
           return node;
         })
       );
     }
-    // updateNodeInternals(id)
+    updateNodeInternals(id)
 };
-
-
 
 const handles = (data?.handles as HandleType[] | undefined)?.map((handle: HandleType) => {
   const isConnected = edges.some(
@@ -109,7 +102,7 @@ const handleLabelKeyDown = (e: React.KeyboardEvent) => {
 return (
   <>
     <div
-      className='relative p-2.5 border border-#777 rounded-[8px] max-w-48 cursor-pointer'
+      className='relative p-2.5  rounded-[8px] max-w-48 cursor-pointer'
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       onDoubleClick={handleNodeDoubleClick}

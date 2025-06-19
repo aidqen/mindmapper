@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCallback } from 'react';
 import { HandleList } from './components/HandleList';
-import { useNodeEditor } from './hooks/useNodeEditor';
+import { useNodeEditor } from '../../../hooks/useNodeEditor';
 import { HandleConfig } from '@/types/handleTypes';
 import type { Node } from '@xyflow/react';
 

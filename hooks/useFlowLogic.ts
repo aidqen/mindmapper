@@ -8,12 +8,12 @@ import {
   useReactFlow,
   Node,
 } from '@xyflow/react';
-import { initialNodes } from '../constants/initialData';
+import { initialNodes } from '../app/flow/[flowId]/constants/initialData';
 import CustomNode from '@/components/custom/nodes/CustomNode';
 import BaseEdge from '@/components/custom/edges/BaseEdge';
 import FloatingEdge from '@/components/custom/edges/FloatingEdge';
 
-export const useFlowLogic = () => {
+export function useFlowLogic() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { zoomIn, zoomOut, fitView } = useReactFlow();
@@ -63,6 +63,7 @@ export const useFlowLogic = () => {
     edgeTypes,
     
     // Actions
+    onAddNode,
     setLocked,
     onNodesChange,
     onEdgesChange,

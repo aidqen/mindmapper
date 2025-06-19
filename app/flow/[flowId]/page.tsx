@@ -12,11 +12,15 @@ import {
 import '@xyflow/react/dist/style.css';
 import { CustomControls } from '../../../components/custom/CustomControls';
 import ConnectionLineAnimated from '../../../components/custom/ConnectionLineAnimated/ConnectionLineAnimated';
-import { useFlowLogic } from './hooks/useFlowLogic';
+import { useFlowLogic } from '../../../hooks/useFlowLogic';
 import { createSmallToolbarButtons } from './config/toolbarConfig';
 import { FlowHeader } from './components/FlowHeader';
+import { FlowSidebar } from '@/components/custom/FlowSidebar';
+import { useSidebar } from '@/components/ui/sidebar';
+import { useCallback } from 'react';
 
 export default function Home() {
+  const { setOpen } = useSidebar();
   const {
     nodes,
     edges,
@@ -30,6 +34,7 @@ export default function Home() {
     onConnect,
     onMoveStart,
     onMoveEnd,
+    onAddNode,
     zoomIn,
     zoomOut,
     fitView,
@@ -43,12 +48,17 @@ export default function Home() {
     setLocked
   );
 
-  // const mainToolbarButtons = createMainToolbarButtons();
+
+  const handleFlowClick = useCallback((event: React.MouseEvent) => {
+    if (event.target instanceof Element && event.target.classList.contains('react-flow__pane')) {
+      setOpen(false);
+    }
+  }, [setOpen]);
 
   return (
     <div className="w-full h-screen relative bg-gray-900/90">
       <FlowHeader />
-      
+      <FlowSidebar onAddNode={onAddNode} />
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}
@@ -59,6 +69,7 @@ export default function Home() {
         onConnect={onConnect}
         onMoveStart={onMoveStart}
         onMoveEnd={onMoveEnd}
+        onClick={handleFlowClick}
         fitView
         connectionLineType={ConnectionLineType.Step}
         connectionMode={ConnectionMode.Strict}

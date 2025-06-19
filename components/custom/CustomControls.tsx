@@ -26,7 +26,7 @@ export function CustomControls({ direction, buttons, position = 'bottom-left', c
   const positionClass = setPosition(position)
 
   return (
-    <div className={`absolute bottom-8 z-50 liquid-glass-strong flex rounded-full 
+    <div className={`absolute bottom-8 z-50 liquid-glass-strong flex rounded-full backdrop-blur-xs 
     ${positionClass} ${direction === 'column' ? 'flex-col' : 'flex-row'} ${className}`}>
 
       {buttons.map((button) => (

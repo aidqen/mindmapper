@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 export const FlowHeader = () => {
   return (
     <motion.div
-      className="absolute top-4 left-4 z-10 liquid-glass rounded-xl p-6"
+      className="absolute top-4 left-4 z-10 liquid-glass rounded-xl p-6 backdrop-blur-xs"
       animate={{
         y: [0, -6, 0]
       }}

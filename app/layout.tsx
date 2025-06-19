@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ReactFlowProvider } from "@xyflow/react";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { NodeDetailsProvider } from "@/contexts/NodeDetailsContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,13 +16,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <ReactFlowProvider>
-        <body
-          className={` antialiased bg-blue-500`}
-        >
-          {children}
-        </body>
-      </ReactFlowProvider>
+      <SidebarProvider
+        defaultOpen={false}
+      >
+        <NodeDetailsProvider>
+          <ReactFlowProvider>
+            <body
+              className={` antialiased bg-blue-500`}
+            >
+              {children}
+            </body>
+          </ReactFlowProvider>
+        </NodeDetailsProvider>
+      </SidebarProvider>
     </html>
   );
 }
